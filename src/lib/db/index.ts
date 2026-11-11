@@ -46,11 +46,9 @@ export const db = new ProofPocketDB()
 
 export async function initDatabase(): Promise<void> {
   if (!window.indexedDB) {
-    console.error('IndexedDB is not supported in this browser')
-    return
+    throw new Error('IndexedDB is not supported in this browser.')
   }
   await db.open()
-  console.log('Database opened successfully')
 }
 
 export async function closeDatabase(): Promise<void> {
@@ -120,9 +118,6 @@ export async function validateStorageSpace(neededBytes: number): Promise<{ canSt
 export async function handleQuotaError(neededBytes: number): Promise<void> {
   const { canStore, currentUsage } = await validateStorageSpace(neededBytes)
   if (!canStore) {
-    console.warn(
-      `Storage space insufficient. Current: ${currentUsage.used} bytes, Needed: ${neededBytes} bytes.`
-    )
     throw new Error(
       `Storage quota exceeded. Current usage: ${formatBytes(currentUsage.used)}. Please export your data and clear old records, or free up storage space.`
     )
